@@ -1,0 +1,145 @@
+body {
+
+  color: black;
+  }
+
+#map { 
+    height: 500px;
+    padding: 0px;
+}
+
+h1 {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 0px;
+  font-size: 36px;
+  line-height: 0.5;
+  font-family: 'Segoe UI', sans-serif;
+  vertical-align: middle;
+  text-decoration: none;
+  color: rgb(0,0,0);
+}
+
+h5 {
+    font-family: 'Segoe UI', sans-serif;
+    padding-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 14px;
+    color: #595959;
+}
+
+.sequence-control-container1 {
+   font-family: 'Segoe UI', sans-serif;
+   width: 275px;
+   height: 50px;
+   background-color: rgba(255,255,255, 0.8);
+   padding: 3px;
+   line-height: 5px;
+   text-align: center;
+   border: solid gray 0px;
+}
+.leaflet-popup-content p {
+    margin-bottom: 1px;
+    margin-top: 1px;
+    font-family: 'Segoe UI', sans-serif;
+      background-color: rgba(255,255,255, 0.8);
+    line-height: 2;
+        
+}
+
+.sequence-control-container2 {
+  font-family: 'Segoe UI', sans-serif;
+   width: 275px;
+   height: 50px;
+   background-color: rgba(255,255,255, 0.8);
+   padding: 3px;
+   line-height: 5px;
+   text-align: center;
+   border: solid gray 0px;
+}
+
+#sequence-control-text1 {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    line-height: 1.1;
+    padding-bottom: 10px;
+    padding-top: 0px;
+    text-align: center;
+}
+
+#sequence-control-text2 {
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    line-height: 1.1;
+    padding-bottom: 10px;
+    padding-top: 0px;
+    text-align: center;
+}
+
+.range-slider1 {
+    width: 150px;
+    padding: 0px;
+}
+
+
+.range-slider2 {
+    width: 150px;
+   padding: 0px;
+}
+
+.temporal-legend2 {
+  font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    line-height: 1.1;
+    padding-bottom: 10px;
+    padding-top: 0px;
+    text-align: center; 
+}
+
+.temporal-legend1 {
+  font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    line-height: 1.1;
+    padding-bottom: 10px;
+    padding-top: 0px;
+    text-align: center; 
+}
+.legend-control-container1 {
+   font-weight: bold;
+    background-color: rgba(255,255,255, 0.8);
+   padding: 2px;
+   width: 200px;
+   line-height: 10px;
+     line-height: 1.1;
+   font-size: 12px;
+   word-wrap: break-word;
+    overflow-wrap: break-word;
+   text-align: center;
+   border: solid gray 0px;
+}
+
+.legend-control-container2 {
+  
+    font-weight: bold;
+    background-color: rgba(255,255,255, 0.8);
+   padding: 2px;
+    width: 200px;
+   line-height: 10px;
+     line-height: 1.1;
+   font-size: 12px;
+   word-wrap: break-word;
+   overflow-wrap: break-word;
+   text-align: center;
+   border: solid gray 0px;
+}
+
+
+#forward {
+    float: right;
+    
+}
+
+#reverse {
+    float: left;
+}
