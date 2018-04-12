@@ -1,28 +1,28 @@
 (function() {
 
-
+    // attributes in CSV file for mapping
     var attributeArray = ["PCPI", "GDP_peremp",	"GINI", "Per_metro", "College_Deg", "Permfg", "perprof", "Born_Diff", "For_born", "transpay"];
     
     //attribute full names for map/chart labels and dropdown menus
     var labelArray = ["Per Capita Income (PCI)", "Productivity (GDP per Worker)", "Gini Coefficient", "Share of State Population Living in Metro Areas", "Share of Population Age 16 to 64 with a College Degree", "Share of Employment in Manufacturing", "Share of Employment in Professional, Tech. & Scientific Svcs", "Share of Population Born in Different State", "Share of Population that is Foreign Born", "Share of Income from Transfer Payments"];
     
+    
+    // color values from ColorBrewer (Thanks Cynthia, Mark, Ben, Andy and David!)
     var colorClasses = ["#c7e9b4", "#7fcdbb", "#41b6c4", "#2c7fb8", "#253494"];
     
-
+    // variables for legend text values
     var classValue1,
         classValue2,
         classValue3,
         classValue4,
         classValue5;
     
+    // index to track which attribute is selected
     var variableIndex = 0;
     
     var expressed = attributeArray[0]; 
     
-    
-     //var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-
-         
+    // variables for setting chart characteristcs
     var chartWidth = window.innerWidth * 0.9,
         chartHeight = window.innerHeight * 0.25,
         leftPadding = 90,
@@ -31,7 +31,8 @@
         chartInnerWidth = chartWidth - leftPadding - rightPadding,
         chartInnerHeight = chartHeight - topBottomPadding * 2,
         translate = "translate(" + leftPadding + "," + topBottomPadding + ")";
-     
+    
+    // variables for setting legend characteristcs
     var legendWidth = window.innerWidth * 0.4,
         legendHeight = window.innerHeight * 0.58,
         legendRectHeight = 20,
@@ -42,17 +43,17 @@
         
     
     var yScale = d3.scaleLinear()
-    
         .range([chartHeight - 10, 0])
-        .domain([0, 80000]);  
+        .domain([0, 80000]); // set for initial mapping of per capita income
     
- 
+   // used to format currency values
    var currencyFormatter = new Intl.NumberFormat('en-US', {
        style: 'currency',
        currency: 'USD',
        minimumFractionDigits: 0,
     });
     
+    // used to format percentage values
     var percentFormatter = new Intl.NumberFormat('en-US', {
         style: 'percent',
         minimumFractionDigits: 1,
@@ -64,7 +65,9 @@
    
     
     
-//////////////////////////////////////////////////////////////////////////////////////////////   
+////////////////////////////////////////////////////////////////////////////////////////////// 
+// sets the initial values/characteristics of the map    
+
     function setMap() {
 
         var width = window.innerWidth * 0.55,
@@ -78,12 +81,10 @@
 
         var projection = d3.geoAlbersUsa()
             .translate([width/1.85, height/1.88])
-            .scale(width*0.95)
-            //.center([-120.0, 35.0]);
+            .scale(width*0.95) //adjust scale based on size of window
 
         var path = d3.geoPath()
             .projection(projection);
-
 
         d3.queue()
             .defer(d3.csv, "data/dynamism.csv")
@@ -92,31 +93,32 @@
 
         function callback(error, dynamismCSV, states){
 
-            var us_states = topojson.feature(states, states.objects.us_state).features;  //remember to check your .topojson file to be sure you are using the correct objects
-
+            var us_states = topojson.feature(states, states.objects.us_state).features;  //remember to check .topojson file to be sure you are using the correct objects
             
-            us_states = joinData(us_states, dynamismCSV);
+            us_states = joinData(us_states, dynamismCSV); // join attribute data
 
             var colorScale = quantileColorScale(dynamismCSV);
             
             setEnumerationUnits(us_states, map, path, colorScale);
             
-            setLegend();
-            setChart(dynamismCSV, colorScale);
+            setLegend(); // initialize legend
             
-            createDropdown(dynamismCSV);
+            setChart(dynamismCSV, colorScale); // initialize chart
             
-            console.log(error);
-            console.log(dynamismCSV);
-            console.log(states);
+            createDropdown(dynamismCSV); //initialize dropdown menu
             
-        };// callback function
+            //console.log(error);
+            //console.log(dynamismCSV);
+            //console.log(states);
+            
+        }; // callback function
 
     }; // setMap function
     
     
     ///////////////////////////////////////////////////////////////////////////////////////////////////    
-
+    // sets the initial values/characteristics of the legend   
+    
     function setLegend(){
          var legend = d3.select("#map")
             .append("svg")
@@ -124,6 +126,7 @@
             .attr("height", legendHeight)
             .attr("class", "legend");
         
+        // legend text variables
         var legendHeader1 = legend.append("text")
             .attr("class", "legendHeader1")
             .attr("x", legendXOffset)
@@ -166,14 +169,14 @@
             .attr("y", 165)
             .text("Explore various state attributes and see.. ");
         
-       
         var legendBackground = legend.append("rect")
             .attr("class", "legendBackground")
             .attr("width", chartInnerWidth)
             .attr("height", chartInnerHeight)
             .attr("transform", translate);
         
-         var attributeLegendTitle = legend.append("text")
+        // legend map value characteristics
+        var attributeLegendTitle = legend.append("text")
             .attr("x", legendXOffset)
             .attr("y", 210)
             .attr("class", "attributeLegendTitle")
@@ -260,7 +263,7 @@
     
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-    
+// sets the values/characteristics of the attribute dropdown menu   
     
     function createDropdown(dynamismCSV){
         var dropdown = d3.select("#map")
@@ -282,7 +285,7 @@
             .append("option")
             .attr("value", function(d){ return d })
             .text(function(d){
-                if (d == attributeArray[0]) {
+                if (d == attributeArray[0]) {  // get label values from array based on index of attribute array
                     d = labelArray[0];
                 } else if (d == attributeArray[1]) {
                     d = labelArray[1];
@@ -308,6 +311,7 @@
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// following  two functions control highlighting of map and chart features
     
     function highlight(props){
         var selected = d3.selectAll("." + props.ST_ABBR)
@@ -322,9 +326,6 @@
             .style("fill-opacity", function(){
                 return getStyle(this, "fill-opacity")
             });
-           // .style("stroke-width", function(){
-         //       return getStyle(this, "stroke-width")
-      //      });
       
          
         function getStyle(element, styleName) {
@@ -342,6 +343,8 @@
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// sets the values/characteristics of labels
+// uses label array values to change the text and formating functions to format attribute values
     
     function setLabel(props){
         
@@ -379,8 +382,6 @@
                 tempValue = percentFormatter.format((props[expressed])/100);
            };
         
-
-        
         var labelAttribute = "<h1>" + tempValue + "</h1>"; // <b>" + tempLabelName + "</b>";
         
         //console.log(props[expressed])
@@ -397,6 +398,9 @@
             .html(tempLabelName + " in " + props.STATE_NAME)
         
     };
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// changes label positions to be responsive to position on the page.
     
     function moveLabel() {
         
@@ -419,11 +423,12 @@
     };
     
 ////////////////////////////////////////////////////////////////////////////////////////////////
+// change the map/chart attibute based on change to dropdown menu selection
     
     function changeAttribute(attribute, dynamismCSV) {
         expressed = attribute;
         
-         var attributeMax = d3.max(dynamismCSV,function(d){
+        var attributeMax = d3.max(dynamismCSV,function(d){
             return +d[expressed];
         });
         
@@ -431,15 +436,15 @@
             return +d[expressed];  // double-check this
         });
     
-         yScale.range([chartHeight - 10, 0])// range is the height of the chart - 10 or the padding
-         yScale.domain([0, attributeMax + (attributeMax * 0.1)]); 
+        yScale.range([chartHeight - 10, 0])// range is the height of the chart - 10 or the padding
+        yScale.domain([0, attributeMax + (attributeMax * 0.1)]); 
         
         var colorScale = quantileColorScale(dynamismCSV);
         
         var stateBorders = d3.selectAll(".stateBorders")
-        .transition()
-        .duration(1000)
-        .style("fill", function(d){
+            .transition()
+            .duration(1000)
+            .style("fill", function(d){
                 return checkChoropleth(d.properties, colorScale)
             });
         
@@ -448,16 +453,17 @@
                 return b[expressed] - a[expressed];
             })
             .transition()
-        .delay(function(d, i){
-            return i * 20
-        })
-        .duration(500);
+            .delay(function(d, i){
+                return i * 20
+            })
+            .duration(500);
         
-        updateChart(bars, dynamismCSV.length, colorScale);
+        updateChart(bars, dynamismCSV.length, colorScale);  //update the chart values/appeaance
         
     }; // changeAttribute function
         
 ////////////////////////////////////////////////////////////////////////////////////////////////
+//set the map characteristics
     
     function setEnumerationUnits (us_states, map, path, colorScale) {
         
@@ -484,9 +490,9 @@
             .text('{"stroke": "white", "stroke-width": "2px"}');  // make sure these match your .css properties 
 
     }; // setEnumerationUnits function
-    
-   //////////////////////////////////////////////////////////////////////////////////////////// 
 
+//////////////////////////////////////////////////////////////////////////////////////////// 
+// the following two functions set and update the values of the chart
     
     function setChart(dynamismCSV, colorScale) {
         
@@ -541,10 +547,9 @@
             .attr("height", chartInnerHeight)
             .attr("transform", translate);
         
-        
         updateChart(bars, dynamismCSV.length, colorScale);
             
-    };
+    };// setChart function
     
     
     function updateChart(bars, n, colorScale){
@@ -570,11 +575,14 @@
         d3.selectAll("g.axis")   
             .call(yAxis); 
       
-    };
+    };// updateChart function
 
-    
+////////////////////////////////////////////////////////////////////////////////////////////
+// updates the legend text and legend class values when attributes are changed.    
+
     function updateLegendValues(){
-        console.log (variableIndex);
+        
+        //console.log (variableIndex);
 
         if (variableIndex == 0) {
              var legendHeader1 = d3.select(".legendHeader1")
@@ -775,6 +783,7 @@
             return +d[expressed];  // double-check this
         }); 
         
+        //update the legend values based on attribute changes. 
         
         if (variableIndex <= 1) {
             tempValue1 = currencyFormatter.format(tempMin);
@@ -799,7 +808,6 @@
             tempValue6 = percentFormatter.format(tempMax/100);
         };
         
-        
         classValue1 = tempValue1 + " to " + tempValue2;
         classValue2 = tempValue2 + " to " + tempValue3;
         classValue3 = tempValue3 + " to " + tempValue4;
@@ -812,6 +820,8 @@
         
     }; // quantileColorScale function
     
+ ///////////////////////////////////////////////////////////////////////////////
+// joins attribute data to spatial data
     
     function joinData(us_states, dynamismCSV){    
         
