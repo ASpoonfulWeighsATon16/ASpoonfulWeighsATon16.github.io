@@ -528,7 +528,7 @@
             .text('{"stroke": "none", "stroke-width": "0px"}');
         
         var chartTitle = chart.append("text")
-            .attr("x", 120)
+            .attr("x", 160)
             .attr("y", 15)
             .attr("class", "chartTitle")
             .text("Number of Variable " + expressed + " by State");  
