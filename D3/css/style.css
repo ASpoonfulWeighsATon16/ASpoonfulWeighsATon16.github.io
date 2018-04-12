@@ -1,0 +1,213 @@
+body {
+
+  color: black;
+  }
+
+.map { 
+    fill: #FFF;
+    margin: 0 0 30px 0;
+}
+
+.chart {
+    float: left;
+    margin: 5px 0px 5px 0;
+
+}
+.dropdown {
+    position: absolute;
+    top: 0.1;
+    left: 60px;
+    z-index: 10;
+    font-family: sans-serif;
+    font-size: 0.8em;
+    font-weight: bold;
+    padding: 1px;
+    border: 1px solid #999;
+    box-shadow: 2px 2px 4px #999;
+}
+
+
+.option {
+    font-weight: normal;
+}
+
+.stateBorders {
+    fill: #FFF;
+    stroke: rgb(125,125,125);
+    stroke-width: 0.7px;
+}
+
+.legendHeader {
+    overflow-wrap: break-word;
+}
+
+.legend{
+    float: right;
+    overflow-wrap: break-word;
+   }
+
+.legendBackground{
+    fill: rgba(255, 255, 255, 0.2);
+}
+
+.legendHeader1{
+    font-family: sans-serif;
+    font-size: 1em; 
+}
+
+.legendHeader2{
+    font-family: sans-serif;
+    font-size: 1em;
+}
+
+.legendHeader3{
+    font-family: sans-serif;
+    font-size: 1em;
+}
+
+.legendHeader4{
+    font-family: sans-serif;
+    font-size: 1em;
+}
+
+.legendHeader5{
+    font-family: sans-serif;
+    font-size: 1em;
+}
+
+.legendHeader6{
+    font-family: sans-serif;
+    font-size: 1em;
+    
+}
+
+.legendHeader7{
+    font-family: sans-serif;
+    font-size: 1em;
+    font-style: italic;
+}
+
+.legendValue1{
+    font-family: sans-serif;
+    font-size: 0.9em;
+}
+
+.legendValue2{
+    font-family: sans-serif;
+    font-size: 0.9em;
+}
+
+.legendValue3{
+    font-family: sans-serif;
+    font-size: 0.9em;
+}
+
+.legendValue4{
+    font-family: sans-serif;
+    font-size: 0.9em;
+}
+
+.legendValue5{
+    font-family: sans-serif;
+    font-size: 0.9em;
+}
+
+.mapSources{
+    font-family: sans-serif;
+    font-size: 0.7em;
+}
+
+.chartTitle {
+    font-family: sans-serif;
+    font-size: 1.0em;
+    font-weight: bold;
+}
+
+.chartBackground {
+    fill: rgba(255, 255, 255, 0.2);
+}
+
+.chartFrame {
+    fill: none;
+    stroke: #999;
+    stroke-width: 0px;
+    padding: 10px;
+    shape-rendering: crispEdges;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: black;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family: sans-serif;
+    font-size: 1.2em;
+    fill: #999;
+}
+
+.title {
+    word-wrap: normal;
+    font-family: sans-serif;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.labelname {
+    font-weight: bold;
+}
+.infolabel {
+    position: absolute;
+    font-family: sans-serif;
+    height: 50px;
+    min-width: 100px;
+    color: #fff;
+    word-wrap: break-word;
+    background-color: rgba(128, 128, 128, 0.75);
+    border: solid thin #fff;
+    padding: 5px 10px;
+    top: -75px;
+}
+
+#datadesc{
+    word-wrap:break-word;
+}
+
+.attributeLegendTitle {
+    font-family: sans-serif;
+    font-size: 1.0em;
+    font-weight: bold;
+}
+
+.infolabel h1 {
+     color: #fff;
+    margin: 0 20px 0 0;
+    padding: 0;
+    display: inline-block;
+    line-height: 1em;
+}
+
+h1 {
+  padding-right: 10px;
+  padding-left: 50px;
+  padding-bottom: 5px;
+  padding-top: 10px;
+  font-size: 26px;
+  line-height: 0.5;
+  font-family: sans-serif;
+  vertical-align: middle;
+  text-decoration: none;
+  color: rgb(0,0,0);
+}
+
+h5 {
+    font-family: 'Segoe UI', sans-serif;
+    padding-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 14px;
+    color: #595959;
+}
