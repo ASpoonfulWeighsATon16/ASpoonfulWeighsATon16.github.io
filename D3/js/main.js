@@ -255,7 +255,7 @@
         var mapSources = legend.append("text")
             .attr("class", "mapSources")
             .attr("x", legendXOffset)
-            .attr("y", (parseFloat(legendValue5.attr("y")) + legendYOffset + 10))
+            .attr("y", (parseFloat(legendValue5.attr("y")) + legendYOffset))
             .text("Data Sources: U.S. Census Bureau and Bureau of Economic Analysis");
          
     };
@@ -528,7 +528,7 @@
             .text('{"stroke": "none", "stroke-width": "0px"}');
         
         var chartTitle = chart.append("text")
-            .attr("x", 120)
+            .attr("x", 160)
             .attr("y", 15)
             .attr("class", "chartTitle")
             .text("Number of Variable " + expressed + " by State");  
