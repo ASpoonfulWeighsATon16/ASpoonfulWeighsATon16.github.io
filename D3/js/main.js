@@ -255,7 +255,7 @@
         var mapSources = legend.append("text")
             .attr("class", "mapSources")
             .attr("x", legendXOffset)
-            .attr("y", (parseFloat(legendValue5.attr("y")) + legendYOffset + 20))
+            .attr("y", (parseFloat(legendValue5.attr("y")) + legendYOffset + 10))
             .text("Data Sources: U.S. Census Bureau and Bureau of Economic Analysis");
          
     };
