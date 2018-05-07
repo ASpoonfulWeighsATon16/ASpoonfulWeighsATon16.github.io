@@ -5,7 +5,7 @@
     var attributeArrayRight = ["medage16", "mfg652000", "wrkAge2030", "urate17", "pRate16", "pRateFem16", "bach2016", "perstr14", "autoBall"];
     
     
-    //attribute full names for map/chart labels and dropdown menus
+    //attribute full names for map/chart labels, dropdown menus, and variable discussions
     var dropdownLabels = ["Median Age", "Share of Manufacturing Employees Age 55 and Older", "Share of Population Age 16 to 64", "Unemployment Rate", "Labor Participation Rate - Age 16 and Over","Female Labor Participation Rate", "Share of Population with a Bachelor's Degree or Higher", "Percent of Workers Commuting 50 Miles or More", "Job Automation Probability"];
     
     var labelArrayLeft = ["Median Age","Manufacturing Employees Age 55 and Over" ,"Share of Population Age 16 to 64", "Unemployment Rate", "Labor Participation Rate", "Female Labor Participation Rate", "Bachelor's Degree or Higher", "Workers Commuting 50 Miles or More", "Job Automation Probability"];
@@ -45,7 +45,7 @@
     colorScaleRight = [];
 
     
-    // variables for legend text values
+    // variables for legend values and text titles
     var classValue1,
         classValue2,
         classValue3,
@@ -100,7 +100,7 @@
     window.onload = setMapLeft(), setMapRight();
     
 ////////////////////////////////////////////////////////////////////////////////////////////// 
-// sets the initial values/characteristics of the map    
+// sets the initial values/characteristics of the Right map    
     function setMapRight() {
 
         var rightMap = d3.select("#container")
@@ -137,8 +137,9 @@
         }; // callback function
 
     }; // setMapRight function
-    
-    
+
+////////////////////////////////////////////////////////////////////////////////////////////// 
+// sets the initial values/characteristics of the Left map   
     function setMapLeft() {
 
         var leftmap = d3.select("#container")
@@ -187,11 +188,10 @@
             
         }; // callback function
 
-    }; // setMap function
-    
-    
-    ///////////////////////////////////////////////////////////////////////////////////////////////////    
-    // sets the initial values/characteristics of the legend   
+    }; // setMapLeft function
+     
+///////////////////////////////////////////////////////////////////////////////////////////////////    
+// sets the initial map titles  
     
     function setMapTitles (){
         var mapTitles = d3.select("#titleContainer")
@@ -212,6 +212,9 @@
             .attr("y", 15)
             .text(titlesRight[variableIndex]);
     }
+    
+///////////////////////////////////////////////////////////////////////////////////////////////////    
+// sets the initial legend values 
     
     function setLegend(){
    
@@ -381,7 +384,7 @@
         var titleOption = dropdown.append("option")
             .attr("class", "titleOption")
             .attr("disabled", "true")
-            .text("Explore the Past and the Future of Wisconsin's Labor Force");
+            .text("Explore Wisconsin's Labor Market Characterics");
         
         var attrOptions = dropdown.selectAll("attrOptions")
             .data(attributeArrayLeft)
@@ -414,10 +417,8 @@
             });
     };
 
-
-    
  ////////////////////////////////////////////////////////////////////////////////////////////////
-// following  two functions control highlighting of map and chart features
+// following two functions control highlighting of map label and highlight features for left and right maps respectively
     
     function highlightLeft(props){
         var selected = d3.selectAll("." + props.FIPSF)
@@ -448,9 +449,6 @@
     };
 
     
-////////////////////////////////////////////////////////////////////////////////////////////////
-// following  two functions control highlighting of map and chart features
-    
     function highlightRight(props){
         var selected = d3.selectAll("." + props.FIPSF)
             .style("fill-opacity", "0.1");
@@ -480,7 +478,7 @@
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// sets the values/characteristics of labels
+// sets the values/characteristics of labels: left and right maps
 // uses label array values to change the text and formatting functions to format attribute values
     
     function setLabelLeft(props){
@@ -575,7 +573,7 @@
     
     
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// changes label positions to be responsive to position on the page.
+// changes label positions to be responsive to position on the right or left map
     
     function moveLabelLeft() {
         
@@ -619,7 +617,7 @@
     };
     
 ////////////////////////////////////////////////////////////////////////////////////////////////
-// change the map/chart attibute based on change to dropdown menu selection
+// change the left/right attibutes based on change to dropdown menu selection
     
     function changeAttributeLeft(attribute, leftmapCSV) {
         expressedLeft = attribute;
@@ -647,11 +645,6 @@
     
     function changeAttributeRight(attribute) {
         expressedRight = attribute;
-    
-     //   yScale.range([chartHeight - 10, 0])// range is the height of the chart - 10 or the padding
-      //  yScale.domain([0, attributeMax + (attributeMax * 0.1)]); 
-        
-       //colorScaleRight = colorScaleLeft;
         
         var countyBordersLeft = d3.selectAll(".countyBordersRight")
             .transition()
@@ -687,12 +680,9 @@
            .on("mousemove", moveLabelLeft);
         
         var desc = countyBordersLeft.append("desc")
-            .text('{"stroke": "white", "stroke-width": "2px"}');  // make sure these match your .css properties 
-
-    }; // setEnumerationUnits function
-
+            .text('{"stroke": "white", "stroke-width": "2px"}');  
+    }; // setEnumerationUnitsLeft function
     
-    //set the map characteristics
     
     function setEnumerationUnitsRight (countyRight, map, path, colorScaleRight) {
         
@@ -716,70 +706,12 @@
            .on("mousemove", moveLabelRight);
         
         var desc = countyBordersRight.append("desc")
-            .text('{"stroke": "white", "stroke-width": "2px"}');  // make sure these match your .css properties 
+            .text('{"stroke": "white", "stroke-width": "2px"}');  
 
-    }; // setEnumerationUnits function
+    }; // setEnumerationRightUnits function
 
 //////////////////////////////////////////////////////////////////////////////////////////// 
-// the following two functions set and update the values of the chart
-    
-    function setChart(leftmapCSV, colorScale) {
-        
-        var chart = d3.select("#leftMap")
-            .append("svg")
-            .attr("width", chartWidth)
-            .attr("height", chartHeight)
-            .attr("class", "chart");
-       
-        var chartBackground = chart.append("rect")
-            .attr("class", "chartBackground")
-            .attr("width", chartInnerWidth)
-            .attr("height", chartInnerHeight)
-            .attr("transform", translate);
-        
-        var bars = chart.selectAll(".bars")
-            .data(leftmapCSV)
-            .enter()
-            .append("rect")
-            .sort(function (a, b){
-                return b[expressed] - a[expressed]
-            })
-            .attr("class", function(d){
-                return "bars " + d.FIPSF;
-            })
-         
-            .attr("width", chartInnerWidth / leftmapCSV.length - 1) // set width of bar to chart width divided by number of elements
-            .on("mouseover", highlightLeft)
-            .on("mouseout", dehighlightLeft)
-            .on("mousemove", moveLabelLeft);
-        
-        var desc = bars.append("desc")
-            .text('{"stroke": "none", "stroke-width": "0px"}');
-        
-        var chartTitle = chart.append("text")
-            .attr("x", 160)
-            .attr("y", 15)
-            .attr("class", "chartTitle")
-            .text("Number of Variable " + expressed + " by County");  
-        
-        var yAxis = d3.axisLeft()
-            .scale(yScale);
-        
-        var axis = chart.append("g")
-            .attr("class", "axis")
-            .attr("transform", translate)
-            .call(yAxis);
-        
-        var chartFrame = chart.append("rect")
-            .attr("class", "chartFrame")
-            .attr("width", chartInnerWidth)
-            .attr("height", chartInnerHeight)
-            .attr("transform", translate);
-        
-     //   updateChart(bars, leftmapCSV.length, colorScale);
-            
-    };// setChart function
-    
+
 ////////////////////////////////////////////////////////////////////////////////////////////
 // updates the legend text and legend class values when attributes are changed.    
 
@@ -927,41 +859,29 @@
     
         var attributeLegendTitle = d3.select(".attributeLegendTitle")
             .text(labelArrayLeft[variableIndex]);
-        
         var legendValue1 = d3.select(".legendValue1")
             .text(classValue1);
-        
         var legendValue2 = d3.select(".legendValue2")
-            .text(classValue2);
-                
+            .text(classValue2);     
         var legendValue3 = d3.select(".legendValue3")
             .text(classValue3);
-        
         var legendValue4 = d3.select(".legendValue4")
             .text(classValue4);
-        
         var legendValue5 = d3.select(".legendValue5")
             .text(classValue5);
-        
         var legendRectangle1 = d3.select(".legendRectangle1")
              .style("fill", legendBoxColor1);
-        
-         var legendRectangle2 = d3.select(".legendRectangle2")
+        var legendRectangle2 = d3.select(".legendRectangle2")
              .style("fill", legendBoxColor2);
-        
-         var legendRectangle3 = d3.select(".legendRectangle3")
+        var legendRectangle3 = d3.select(".legendRectangle3")
              .style("fill", legendBoxColor3);
-        
-         var legendRectangle4 = d3.select(".legendRectangle4")
+        var legendRectangle4 = d3.select(".legendRectangle4")
              .style("fill", legendBoxColor4);
-        
-         var legendRectangle5 = d3.select(".legendRectangle5")
+        var legendRectangle5 = d3.select(".legendRectangle5")
              .style("fill", legendBoxColor5);
-        
         var  leftMapTitle = d3.select(".leftMapTitle")
             .text(mapTitleLeft);
-        
-         var  leftMapTitle = d3.select(".rightMapTitle")
+        var  leftMapTitle = d3.select(".rightMapTitle")
             .text(mapTitleRight);
         
         var linkBox = d3.select(".linkBox")
@@ -983,7 +903,6 @@
         };
            var colorScale = d3.scaleQuantile()
               .range(colorClasses);
-             // .domain([1, 5000, 25000, 110000]);
         
        var domainArray = [];
        for (var i=0; i<data.length; i++) {
@@ -1084,7 +1003,7 @@
         
         return countyLeft;
         
-    };//joinData function
+    };//joinDataLeft function
 
 
     
@@ -1109,7 +1028,7 @@
         
         return countyRight;
         
-    };//joinData function
+    };//joinDataRight function
     
     function checkChoroplethLeft(props, colorScaleLeft){
          var val = parseFloat(props[expressedLeft]); //This
@@ -1131,5 +1050,4 @@
     
         
 
-
-})();
+})(); //main function
