@@ -16,11 +16,11 @@
     
     var titlesRight = ["Distribution in 2016","Distribution in 2016", "Distribution in 2030", "Distribution in 2017", "Distribution in 2016", "Distribution in 2016", "Distribution in 2016", "Distribution in 2015", "Distribution - Estimate 2"];
    
-    var legendDescription1 = ["How did we get here?","Wisconsin has traditionally been of the nation's ","older states. However, over the past several decades,", "median ages have increased throughout the state.", "In particular, Wisconsin's rural areas have been aging", " rapidly. As residents age, they are less likely to ", "participate in the labor force, reducing labor availability."];
+    var legendDescription1 = ["How did we get here?","Wisconsin has traditionally been one of the nation's ","older states. However, over the past several decades,", "median ages have increased throughout the state.", "In particular, Wisconsin's rural areas have been aging", " rapidly. As residents age, they are less likely to ", "participate in the labor force, reducing labor availability."];
 
     var legendDescription2 = ["How did we get here?", "An aging labor force has impacted some industries ","more than others. For instance, Wisconsin's ", "manufacturing sector now has 25 percent of its", "employees age 55 and over. The industry may have ", " to replace more than 125,000 workers in the coming ", "decade. Again, rural areas face the largest challenge."];
     
-    var legendDescription3 = ["How did we get here?", "Unfortunately, Wisconsin will not become any younger","In the next 15 years. The state's share of working ", "age residents will decline as the share of", "residents age 65 and over continues to grow", "By 2030, every Wisconsin county will see its share of ", "working age residents decline dramatically"];
+    var legendDescription3 = ["How did we get here?", "Unfortunately, Wisconsin will not become any younger","in the next 15 years. The state's share of working ", "age residents will decline as the share of", "residents age 65 and over continues to grow.", "By 2030, every Wisconsin county will see its share of ", "working age residents decline dramatically"];
     
     var legendDescription4 = ["How did we get here?", "Unemployment rates in Wisconsin (and the Upper ","Midwest) have also declined dramatically, even in ", " comparison to the period prior to the start of the Great ", "Recession in 2007. Wisconsin's unemployment rate", "now sits at under 3.0%. In fact, all but several counties ", "now have an unemployment rate under 4.5%"];
     
