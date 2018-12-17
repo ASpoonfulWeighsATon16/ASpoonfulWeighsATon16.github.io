@@ -1,13 +1,35 @@
 var map;
-var place;
+var incidentPlace;
+var incidentPlaceName;
+
+var autocomplete_incident;
 var autocomplete;
+
+var baseMapLayer;  // controls which demographic attribute is depicted.  Will change based on dropdown menu value.
+var baseMapOff = "True";
+var heatMapOff = "False";
+var supportOrgsOff = "True";
+
 var infowindow = new google.maps.InfoWindow();
+
+var swLatLng = new google.maps.LatLng(33, -119);
+var neLatLng = new google.maps.LatLng(35, -117);
+var startUpBounds = new google.maps.LatLngBounds(swLatLng, neLatLng);
+var currentBounds = new google.maps.LatLngBounds();
+
+var currentCenter = new google.maps.LatLng(34.31, -118.2);
+var currentZoom = 9;
+//var symbolScaledSize = new google.maps.Size(20, 20);
+
+var startUpView = "True";
 
 function initialization() {
     showCrimes();
     initAutocomplete();
+
 }
 
+//***************************************************************************************************************
 function showCrimes() {
     $.ajax({
         url: 'HttpServlet',
@@ -17,32 +39,35 @@ function showCrimes() {
             mapInitialization(crimes);
         },
         error: function(xhr, status, error) {
-            alert("An AJAX error occured: " + status + "\nError: " + error);
+            alert("An AJAX error ocurred: " + status + "\nError: " + error);
         }
     });
 }
 
+//***************************************************************************************************************
 function mapInitialization(crimes) {
     var mapOptions = {
-        mapTypeId : google.maps.MapTypeId.ROADMAP, // Set the type of Map
+        mapTypeId: google.maps.MapTypeId.ROADMAP, // Set the type of Map
     };
 
-    // Render the map within the empty div
+    // Render the map
     map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
 
-    var bounds = new google.maps.LatLngBounds ();
+    var bounds = new google.maps.LatLngBounds();
+    var heatmapData = [];
 
-
-    $.each(crimes, function(i, e) {
+    $.each(crimes, function (i, e) {
         var long = Number(e['longitude']);
         var lat = Number(e['latitude']);
-        var latlng = new google.maps.LatLng(lat, long);
+        // console.log(long);
+        //  console.log(lat);
+        if (long != -1.7976931348623157e+308) {
+                var latlng = new google.maps.LatLng(lat, long);
+                heatmapData.push(latlng);
+                bounds.extend(latlng);
+        }
 
-
-        bounds.extend(latlng);
-
-        //Pop up Window Content
-
+       //Pop up Window Content
         var crimeInfoStr = '<h4>Crime Incident Detail</h4><hr>';
         crimeInfoStr += '<p><b>' + 'Date of Incident' + ':</b>&nbsp' + e['INCTDTE'] + '</p>';
         crimeInfoStr += '<p><b>' + 'Date of Reporting' + ':</b>&nbsp' + e['INCREPODT'] + '</p>';
@@ -53,75 +78,350 @@ function mapInitialization(crimes) {
         crimeInfoStr += '<p><b>' + 'Gang Related?' + ':</b>&nbsp' + e['GANGRELAT'] + '</p>';
         crimeInfoStr += '<p><b>' + 'Unit Name' + ':</b>&nbsp' + e['UNITNAME'] + '</p>';
 
-        //  if ('message' in e){
-        //     contentStr += '<p><b>' + 'Message' + ':</b>&nbsp' + e['message'] + '</p>';
-        //  }
-
         //****************************************************************************
-        // Below is my additional code for creating separate markers in Question 2
 
-        // Create the icon based on report type
-        //   if (e['report_type'] == 'damage'){
-        //       var tempImage = 'img/damage.png';
-        //   } else if (e['report_type'] == 'request'){
-        //     var tempImage = 'img/request.png';
-        //  } else if (e['report_type'] == 'donation'){
-        //     var tempImage = 'img/donation.png';
-        //}
+        // Icon images for markers
+        var icon_img = '';
+        if (e['CATEGORY'] === 'DRUNK DRIVING VEHICLE / BOAT') {
+            icon_img = 'http://cdn.onlinewebfonts.com/svg/img_332409.png';
+        } else if (e['CATEGORY'] === 'NARCOTICS') {
+            icon_img = 'https://cdn0.iconfinder.com/data/icons/medical-5/450/capsule-512.png';
+        } else if (e['CATEGORY'] === 'BURGLARY') {
+            icon_img = 'data/burglar-icon-13.jpg';
+          //  icon_img = 'http://chittagongit.com/images/burglar-icon/burglar-icon-13.jpg';
+        } else if (e['CATEGORY'] === 'CRIMINAL HOMICIDE') {
+            icon_img = 'https://static.thenounproject.com/png/225529-200.png';
+        }
 
-        var tempImage = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
         var icon = {
-            url: tempImage,
-            scaledSize: new google.maps.Size(25, 25), //scale the icons
-            origin: new google.maps.Point(0, 0),
-            anchor: new google.maps.Point(0, 0)
+            url: icon_img, // url
+            scaledSize: new google.maps.Size(25, 25), // scaled size
+            origin: new google.maps.Point(0, 0), // origin
+            anchor: new google.maps.Point(0, 0) // anchor
         };
 
-          //var heatmapData = [];
-         //  heatmapData.push(latlng);
-         //   var heatmap = new google.maps.visualization.HeatmapLayer({
-         //       data: heatmapData,
-         //         dissipating: false,
-         //        map: map
-         //    });
+        if (heatMapOff == "True") {
+            var marker = new google.maps.Marker({
+                position: latlng,
+                map: map,
+                icon: icon,
+                //zoom: 10,
+                customInfo: crimeInfoStr
+            });
 
+            //Add a Click Listener to the marker
+            google.maps.event.addListener(marker, 'click', function () {
+                infowindow.setContent(marker['customInfo']);
+                infowindow.open(map, marker); // Open InfoWindow
+            });
+        }
 
-        //Set the marker
-        var marker = new google.maps.Marker({
-            position: latlng, // Position marker to coordinates
-            map: map, // assign the market to our map variable
-            //  icon : icon
-            customInfo: crimeInfoStr
+    });
+
+    map.setCenter(currentCenter);
+    map.setZoom(currentZoom);
+
+ //   if (startUpView == "True") {
+ //       map.fitBounds(startUpBounds);
+ //   }
+ //   else if(startUpView == "False") {
+ //       map.fitBounds(currentBounds);
+ //   }
+
+    if (heatMapOff == "False") {
+        var heatmap = new google.maps.visualization.HeatmapLayer({
+            data: heatmapData,
+            //dissipating: false,
+            radius: 20,
+            map: map
         });
 
-        //Add a Click Listener to the marker
-        google.maps.event.addListener(marker, 'click', function () {
-            // use 'customInfo' to customize infoWindow
-            infowindow.setContent(marker['customInfo']);
-            infowindow.open(map, marker); // Open InfoWindow
-            //  });
+        var gradient = [
+            'rgba(0, 255, 255, 0)',
+            'rgba(0, 255, 255, 1)',
+            'rgba(0, 191, 255, 1)',
+            'rgba(0, 127, 255, 1)',
+            'rgba(0, 63, 255, 1)',
+            'rgba(0, 0, 255, 1)',
+            'rgba(0, 0, 223, 1)',
+            'rgba(0, 0, 191, 1)',
+            'rgba(0, 0, 159, 1)',
+            'rgba(0, 0, 127, 1)',
+            'rgba(63, 0, 91, 1)',
+            'rgba(127, 0, 63, 1)',
+            'rgba(191, 0, 31, 1)',
+            'rgba(255, 0, 0, 1)'
+        ];
 
+        heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);
+        heatmap.setMap(map);
+    }
+
+    if (baseMapOff == "False") {
+        setBaseMap();
+    }
+
+    if (supportOrgsOff == "False") {
+        setSupportOrgs();
+    }
+
+    map.addListener('zoom_changed', function() {
+        console.log(map.getZoom());
+    });
+
+    map.addListener('bounds_changed', function() {
+       currentCenter = map.getCenter();
+       currentZoom = map.getZoom();
+
+       // currentBounds = map.getBounds();
+      //  startUpView = "False";
+      //  console.log(startUpView);
+    });
+
+}
+
+//*********************************************************************************************
+//The setBaseMap function is used to depict basemap demographic layers based on user selections
+function setSupportOrgs() {
+    var supportOrgLayer = new google.maps.Data();
+    supportOrgLayer.loadGeoJson('data/supportOrgs.json');
+
+    var supportIcon = {
+        url: 'data/dot2.png', // url
+        scaledSize: new google.maps.Size(10, 10), // scaled size
+        origin: new google.maps.Point(0, 0), // origin
+        anchor: new google.maps.Point(0, 0) // anchor
+    };
+
+
+    supportOrgLayer.setStyle ({
+        icon: supportIcon
         });
 
-        map.fitBounds(bounds);
+    // popup with organization data
+    supportOrgLayer.addListener('click', function(e) {
+        //  console.log(e);
+
+            infowindow.setContent('<div style="line-height:1.00;overflow:hidden;white-space:nowrap;">' +
+                '<p><b>' + 'Organization Name' + ':</b>&nbsp' +  e.feature.getProperty('CONAME') + '</p>' +
+                '<p><b>' + 'City' + ':</b>&nbsp' +  e.feature.getProperty('CITY') + '</p>' +
+                '<p><b>' + 'ZIP Code' + ':</b>&nbsp' +  e.feature.getProperty('ZIP') + '</p>' +
+                '<p><b>' + 'Number of Employees' + ':</b>&nbsp' +  e.feature.getProperty('EMPNUM') + '</p></div>');
+
+        var anchor = new google.maps.MVCObject();
+        anchor.set("position", e.latLng);
+        infowindow.open(map, anchor);
+    });
+
+    supportOrgLayer.setMap(map); // add the demographic layer to the map
+}
+
+//*********************************************************************************************
+//The setBaseMap function is used to depict basemap demographic layers based on user selections
+function setBaseMap() {
+    var demographicLayer = new google.maps.Data();
+    demographicLayer.loadGeoJson('data/demwgs2016.json');  // basemap Census tract data
+    var attributeLabel;
+    var extraChar;
+
+    // stores values for depicting tract fill colors; color values from ColorBrewer (Thanks Cynthia, Mark, Ben, Andy and David!)
+    var colorArrayGreen = ['#006d2c', '#31a354', '#74c476', '#bae4b3', '#edf8e9'];
+    var colorArrayRed = ['#a50f15', '#de2d26', '#fb6a4a', '#fcae91', '#fee5d9'];
+    var colorArrayOrange = ['#a63603', '#e6550d', '#fd8d3c', '#fdbe85', '#feedde'];
+    var colorArrayBlue = ['#0868ac', '#43a2ca', '#7bccc4', '#bae4bc', '#f0f9e8'];
+    var tempColorArray = [];
+    var valueArray = [];  // stores values for class breaks
+
+    if (baseMapLayer == "medinc") {
+      attributeLabel = 'Median Household Income';
+      tempColorArray = colorArrayGreen;
+      valueArray = [83930, 63604, 48093, 36454];
+      extraChar = "$";
+    }
+    else if (baseMapLayer == "povu18") {
+        attributeLabel = 'Poverty Level: Population Under Age 18';
+        tempColorArray = colorArrayOrange;
+        valueArray = [40.3, 26.5, 14.0, 5.1];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'povall') {
+        attributeLabel = 'Poverty Level: Total Population';
+        tempColorArray = colorArrayOrange;
+        valueArray = [28.3, 19.3, 12.1, 7.5];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'AgeU14') {
+        attributeLabel = 'Share of Population Under age 15';
+        tempColorArray = colorArrayRed;
+        valueArray = [23.7, 19.9, 17.2, 14.0];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'Age1519') {
+        attributeLabel = 'Share of Population Age 15 to 19';
+        tempColorArray = colorArrayRed;
+        valueArray = [8.7, 7.2, 5.9, 4.4];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'Age2024') {
+        attributeLabel = 'Share of Population Age 20 to 24';
+        tempColorArray = colorArrayRed;
+        valueArray = [9.6, 8.1, 6.8, 5.2];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'Age2544') {
+        attributeLabel = 'Share of Population Age 25 to 44';
+        tempColorArray = colorArrayRed;
+        valueArray = [34.0, 30.2, 27.6, 24.3];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'Ag4564') {
+        attributeLabel = 'Share of Population Age 45 to 64';
+        tempColorArray = colorArrayRed;
+        valueArray = [29.8, 26.4, 23.7, 20.6];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'Age65Ovr') {
+        attributeLabel = 'Share of Population Age 65 and Over';
+        tempColorArray = colorArrayRed;
+        valueArray = [17.2, 13.1, 10.3, 7.6];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'lthigh') {
+        attributeLabel = 'Highest Education Attainment: Less than High School';
+        tempColorArray = colorArrayBlue;
+        valueArray = [41.1, 26.3, 14.5, 5.9];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'highsch') {
+        attributeLabel = 'Highest Education Attainment: High School Graduate';
+        tempColorArray = colorArrayBlue;
+        valueArray = [27.6, 23.6, 19.7, 13.6];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'smeasso') {
+        attributeLabel = 'Highest Education Attainment: Some College or Associate Degree';
+        tempColorArray = colorArrayBlue;
+        valueArray = [32.8, 27.5, 23.6, 18.7];
+        extraChar = "%"
+    }
+    else if (baseMapLayer == 'bachigh') {
+        attributeLabel = 'Highest Education Attainment: Bachelor Degree or Higher';
+        tempColorArray = colorArrayBlue;
+        valueArray = [50.3, 30.8, 18.7, 9.6];
+        extraChar = "%"
+    }
+
+    // returns a color based on the value given when the function is called
+    function getColor(val) {
+        return val >= valueArray[0] ? tempColorArray[0] :
+            val > valueArray[1] ? tempColorArray[1] :
+                val > valueArray[2] ? tempColorArray[2] :
+                    val > valueArray[3] ? tempColorArray[3] :
+                        tempColorArray[4];
+    }
+
+    // sets the style of the demographic layer
+    demographicLayer.setStyle(function(feature) {
+        return {
+            fillColor: getColor(feature.getProperty(baseMapLayer)), // sets color and class breaks of census tracts
+            fillOpacity: 0.8,
+            strokeColor: '#b3b3b3',
+            strokeWeight: 1,
+            zIndex: 1
+        };
+    });
+
+    demographicLayer.setMap(map); // add the demographic layer to the map
+
+    // highlight census tract on mouse over
+    demographicLayer.addListener('mouseover', function(e) {
+        demographicLayer.overrideStyle(e.feature, {
+            strokeColor: '#ffffff',
+            strokeWeight: 1,
+            zIndex: 2
+        });
+    });
+
+    // reset layer on mouseout
+    demographicLayer.addListener('mouseout', function(e) {
+        demographicLayer.revertStyle();
+    });
+
+    // popup with census tract data
+    demographicLayer.addListener('click', function(e) {
+      //  console.log(e);
+        var tempLabel;
+        if (extraChar == "$") { // use to set label if value is a dollar amount
+
+                infowindow.setContent('<div style="line-height:1.00;overflow:hidden;white-space:nowrap;">' +
+                '<p><b>' + 'Census Tract' + ':</b>&nbsp' +  e.feature.getProperty('Geography') + '</p>' +
+                '<p><b>' + attributeLabel + ':</b>&nbsp' + extraChar +  e.feature.getProperty(baseMapLayer) + '</p></div>');
+        }
+        else if (extraChar == "%") { // use to set label if value is a percentage
+            infowindow.setContent('<div style="line-height:1.00;overflow:hidden;white-space:nowrap;">' +
+                '<p><b>' + 'Census Tract' + ':</b>&nbsp' +  e.feature.getProperty('Geography') + '</p>' +
+                '<p><b>' + attributeLabel + ':</b>&nbsp' +  e.feature.getProperty(baseMapLayer) + extraChar +'</p></div>');
+        }
+
+        var anchor = new google.maps.MVCObject();
+            anchor.set("position", e.latLng);
+            infowindow.open(map, anchor);
     });
 }
 
-//*******************************************************************************************
+//***************************************************************************************************************
 function initAutocomplete() {
     // Create the autocomplete object
     autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
-    // When the user selects an address from the dropdown, show the place selected
-  //  autocomplete.addListener('place_changed', onPlaceChanged);
+    autocomplete_incident = new google.maps.places.Autocomplete(document.getElementById('autocomplete_incident'));
+
+     // When the user selects an address from the dropdown, show the place selected
+    autocomplete.addListener('place_changed', onPlaceChanged);
+    autocomplete_incident.addListener('place_changed', setIncidentPlace);
+}
+
+
+//*********************************************************************************************
+function onPlaceChanged(){
+    var marker = new google.maps.Marker({
+        map: map,
+        anchorPoint: new google.maps.Point(0, -29)
+    });
+
+        marker.setVisible(false);
+        var place = autocomplete.getPlace();
+        if (!place.geometry) {
+            // User entered the name of a Place that was not suggested and
+            // pressed the Enter key, or the Place Details request failed.
+            window.alert("No details available for input: '" + place.name + "'");
+            return;
+        }
+        // If the place has a geometry, then present it on a map.
+        if (place.geometry.viewport) {
+       //     map.fitBounds(place.geometry.viewport);
+      //  } else {
+            map.setCenter(place.geometry.location);
+            map.setZoom(12);  // Why 12? Because it looks good.
+            var circle = new google.maps.Circle({
+                map: map,
+                radius: 8046,    // 5 miles in metres
+                fillColor: '#AA0000'
+            });
+            circle.bindTo('center', marker, 'position');
+            marker.setPosition(place.geometry.location);
+            marker.setVisible(true);
+        }
+
 }
 
 google.maps.event.addDomListener(window, 'load', initialization);
 
-/*
-// Below is my code for Question 3 to zoom to the selected place
-// *************************************************************
-function onPlaceChanged() {
-    place = autocomplete.getPlace();
+
+//*********************************************************************************************
+function setIncidentPlace() {
+
+    incidentPlace = autocomplete_incident.getPlace();
+
     var placeMarker = new google.maps.Marker({
         map: map,
         anchorPoint: new google.maps.Point(0,0)
@@ -129,29 +429,23 @@ function onPlaceChanged() {
     placeMarker.setVisible(false);
 
     // Check to see if the selected place is valid.  If not, notify user
-    if (!place.geometry) {
-        window.alert("'" + place.name + "'" + " could not be found.  Please try again");
+    if (!incidentPlace.geometry) {
+        window.alert("'" + incidentPlace.name + "'" + " could not be found.  Please try again");
         return;
     }
 
     // If place is valid, zoom to location
-    if (place.geometry) {
-        map.panTo(place.geometry.location);
-        map.setZoom(13);
-      //  placeMarker.setPosition(place.geometry.location);
-      //  placeMarker.setVisible(true);
+    if (incidentPlace.geometry) {
+        map.panTo(incidentPlace.geometry.location);
+        map.setZoom(17);
+        incidentPlaceName = incidentPlace.name;
     }
 }
 
-
-//Execute our 'initialization' function once the page has loaded.
-google.maps.event.addDomListener(window, 'load', initialization);
-
-// createReport Function for question 4
-//**************************************************************************
-function queryReport(event) {
+//*********************************************************************************************
+function queryIncidents(event) {
     event.preventDefault(); // stop form from submitting normally
-    var a = $("#query_report_form").serializeArray();
+    var a = $("#query_form").serializeArray();
     a.push({ name: "tab_id", value: "1" });
     a = a.filter(function(item){return item.value != '';});
     $.ajax({
@@ -159,6 +453,58 @@ function queryReport(event) {
         type: 'POST',
         data: a,
         success: function(crimes) {
+
+
+            for (i = 0; i < a.length; i++) {
+                if (a[i].name == "crimeSymbols") {
+                    crimeSymbolsOn = a[i].value;
+                    if (crimeSymbolsOn == "symbols") {
+                        heatMapOff = "True"
+                    }
+                    if (crimeSymbolsOn == "heatMap") {
+                        heatMapOff = "False"
+                    }
+                }
+            }
+
+           // console.log(a);
+           // var length = a.length;
+
+            for (i = 0; i < a.length; i++) {
+                if (a[i].name == "demo_attribute") {
+                    baseMapLayer = a[i].value;
+                    console.log(baseMapLayer);
+                }
+            }
+            for (i = 0; i < a.length; i++) {
+                if (a[i].name == "demo_layer"){
+                    demoLayerOn = a[i].value;
+                    if (demoLayerOn == "t") {
+                        console.log(demoLayerOn);
+                        console.log(baseMapLayer);
+                        baseMapOff = "False";
+                        //setBaseMap();
+                    }
+                    else if (demoLayerOn == "f") {
+                        baseMapOff = "True";
+                    }
+                }
+            }
+
+            for (i = 0; i < a.length; i++) {
+                if (a[i].name == "support_layer"){
+                    supportLayerOn = a[i].value;
+                    if (supportLayerOn == "t") {
+                        console.log(demoLayerOn);
+                        console.log(baseMapLayer);
+                        supportOrgsOff = "False";
+
+                    }
+                    else if (supportLayerOn == "f") {
+                        supportOrgsOff = "True";
+                    }
+                }
+            }
             mapInitialization(crimes);
         },
         error: function(xhr, status, error) {
@@ -167,33 +513,41 @@ function queryReport(event) {
     });
 }
 
-$("#query_report_form").on("submit",queryReport);
+//$("#query_form").on("submit",queryIncidents);
+
+$("#crime_type").on("change",queryIncidents);
+$("#crimeSymbols").on("change",queryIncidents);
+$("#demo_layer").on("change",queryIncidents);
+$("#demo_attribute").on("change",queryIncidents);
+$("#support_layer").on("change",queryIncidents);
 
 
-// createReport Function for question 4
-//**************************************************************************
 
-function createReport(event) {
+//*********************************************************************************************
+function createIncident(event) {
     event.preventDefault(); // stop form from submitting normally`
-    var reportForm = document.getElementById("create_report_form");
-    var a = $("#create_report_form").serializeArray();
+    var incidentForm = document.getElementById("create_form");
+    var a = $("#create_form").serializeArray();
 
     // Make sure that a place is entered and that it has valid geometry.
     // If not, provide an alert and reset the form
-    if (place != null && place.geometry) {
-        var latNum = place.geometry.location.lat();
-        var lonNum = place.geometry.location.lng();
+    if (incidentPlace != null && incidentPlace.geometry) {
+        var latNum = incidentPlace.geometry.location.lat();
+        var lonNum = incidentPlace.geometry.location.lng();
         var latStr = latNum.toString();
         var lonStr = lonNum.toString();
         a.push({name: "longitude", value: lonStr});
         a.push({name: "latitude", value: latStr});
+        a.push({name: "address", value: incidentPlaceName});
 
         // set the place to null in case next report attempt uses invalid place and previous place remains as a global variable
-        place = null;
+        incidentPlace = null;
+        document.getElementById("autocomplete_incident").placeholder = 'Incident Address';
+
+
     } else {
-        window.alert("A valid place needs to be entered for your report. Please try again");
-        reportForm.reset(); // reset the create report form
-        $(reportForm).find(".additional_msg_div").css("visibility", "hidden"); // hide additional message
+        window.alert("A valid place needs to be entered for your incident. Please try again");
+       // incidentForm.reset(); // reset the create report form
         return;
     }
 
@@ -205,11 +559,9 @@ function createReport(event) {
         url: 'HttpServlet',
         type: 'POST',
         data: a,
-        success: function(crimes) {
+        success: function(incidents) {
             showCrimes();  // Show all crimes also calls mapInitialization
-            reportForm.reset(); // reset the create report form
-            $(reportForm).find(".additional_msg_div").css("visibility", "hidden"); // hide additional message
-            window.alert("The report is successfully submitted!"); // inform user that report was successful
+            window.alert("The incident was successfully submitted."); // inform user that report was successful
          },
         error: function(xhr, status, error) {
             alert("Status: " + status + "\nError: " + error);
@@ -217,6 +569,4 @@ function createReport(event) {
     });
 }
 
-$("#create_report_form").on("submit",createReport);
-
-*/
+$("#create_form").on("submit",createIncident);
