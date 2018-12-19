@@ -4,6 +4,11 @@ html {
     background-color: #669999;
 }
 
+a {
+    color: white;
+    font-weight: bold;
+}
+
 h2, h5 {
     color: white;
     padding-left: 10px
@@ -69,4 +74,12 @@ form {
     border: medium none;
     border-radius: 0;
     color:#fff;
+}
+
+#legend {
+    font-family: Arial, sans-serif;
+    background: #fff;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid #000;
 }

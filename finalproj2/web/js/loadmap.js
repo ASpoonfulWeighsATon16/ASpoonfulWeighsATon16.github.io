@@ -11,6 +11,9 @@ var heatMapOff = "False";
 var supportOrgsOff = "True";
 
 var infowindow = new google.maps.InfoWindow();
+var legendValues = [];
+var legendColors;
+
 
 var swLatLng = new google.maps.LatLng(33, -119);
 var neLatLng = new google.maps.LatLng(35, -117);
@@ -121,12 +124,6 @@ function mapInitialization(crimes) {
     map.setCenter(currentCenter);
     map.setZoom(currentZoom);
 
- //   if (startUpView == "True") {
- //       map.fitBounds(startUpBounds);
- //   }
- //   else if(startUpView == "False") {
- //       map.fitBounds(currentBounds);
- //   }
 
     if (heatMapOff == "False") {
         var heatmap = new google.maps.visualization.HeatmapLayer({
@@ -165,6 +162,9 @@ function mapInitialization(crimes) {
         setSupportOrgs();
     }
 
+    if ((heatMapOff == "True") || (baseMapOff == "False") || (supportOrgsOff=="False"))  {
+        createLegend();
+    }
     map.addListener('zoom_changed', function() {
         console.log(map.getZoom());
     });
@@ -173,13 +173,130 @@ function mapInitialization(crimes) {
        currentCenter = map.getCenter();
        currentZoom = map.getZoom();
 
-       // currentBounds = map.getBounds();
-      //  startUpView = "False";
-      //  console.log(startUpView);
     });
 
 }
 
+//*********************************************************************************************
+function createLegend(){
+
+    var legend = document.createElement('div');
+    legend.innerHTML = '<H4>Legend</H4>';
+    legend.id = "legend";
+
+    if (heatMapOff == "True") {
+        var crimeIcons = {
+            burglary: {
+                name: 'Burglary',
+                icon: 'data/burglar.png'
+            },
+            drunkDriving: {
+                name: 'Homicide',
+                icon: 'data/homicide.png'
+            },
+            homicide: {
+                name: 'Drunk Driving',
+                icon: 'data/drunk_driving.png'
+            },
+            narcotics: {
+                name: 'Narcotics',
+                icon: 'data/narcotics.png'
+            },
+        };
+           for (var key in crimeIcons) {
+            var type = crimeIcons[key];
+            var name = type.name;
+            var icon = type.icon;
+            var div = document.createElement('div');
+            div.innerHTML = '<img src="' + icon + '"> ' + name;
+            legend.appendChild(div);
+        }
+    }// crimeSymbols
+
+    if (supportOrgsOff == "False"){
+        var supportIcons = {
+            support: {
+                name: 'Support Organization',
+                icon: 'data/legdot.png'
+            }
+        };
+        for (var key in supportIcons) {
+            var type = supportIcons[key];
+            var name = type.name;
+            var icon = type.icon;
+            var div = document.createElement('div');
+            div.innerHTML = '<img src="' + icon + '"> ' + name;
+            legend.appendChild(div);
+        }
+    }
+
+    if (baseMapOff == "False"){
+
+        var greenIcons = ['data/green1.png','data/green2.png','data/green3.png','data/green4.png','data/green5.png'];
+        var redIcons = ['data/red1.png','data/red2.png','data/red3.png','data/red4.png','data/red5.png'];
+        var orangeIcons = ['data/orange1.png','data/orange2.png','data/orange3.png','data/orange4.png','data/orange5.png'];
+        var blueIcons = ['data/blue1.png','data/blue2.png','data/blue3.png','data/blue4.png','data/blue5.png'];
+
+        var tempIcons = [];
+
+        if (legendColors == "green"){
+            tempIcons = greenIcons;
+        }
+        else if (legendColors == "red"){
+            tempIcons = redIcons;
+        }
+        else if (legendColors == "orange"){
+            tempIcons = orangeIcons;
+        }
+        else if (legendColors == "blue"){
+            tempIcons = blueIcons;
+        }
+
+        var legendTextArray = [];
+        if (baseMapLayer == "medinc") {
+            var extraChar = "$";
+            var tempText4 = legendValues[0];
+            var tempText3 = legendValues[1];
+            var tempText2 = legendValues[2];
+            var tempText1 = legendValues[3];
+
+            var legText1 = extraChar + "0" + " to " + extraChar + tempText1;
+            var legText2 = extraChar + tempText1 + " to " + extraChar + tempText2;
+            var legText3 = extraChar + tempText2 + " to " + extraChar + tempText3;
+            var legText4 = extraChar + tempText3 + " to " + extraChar + tempText4;
+            var legText5 = extraChar + tempText4 + " or More";
+
+            legendTextArray = [legText1, legText2, legText3, legText4, legText5];
+        }
+        else if (baseMapLayer != "medinc" ) {
+            var extraChar = "%";
+            var tempText4 = legendValues[0];
+            var tempText3 = legendValues[1];
+            var tempText2 = legendValues[2];
+            var tempText1 = legendValues[3];
+
+            var legText1 = "0.0" + extraChar + " to " + tempText1 + extraChar;
+            var legText2 = tempText1 + extraChar +  " to " + tempText2 + extraChar;
+            var legText3 = tempText2 + extraChar +  " to " + tempText3 + extraChar;
+            var legText4 = tempText3 + extraChar +  " to " + tempText4 + extraChar;
+            var legText5 = tempText4 + extraChar +  " or More";
+
+            legendTextArray = [legText1, legText2, legText3, legText4, legText5];
+        }
+
+        console.log(legendTextArray);
+
+        for (i = 0; i < legendTextArray.length; i++){
+            var name = legendTextArray[i];
+            var icon = tempIcons[i];
+            var div = document.createElement('div');
+            div.innerHTML = '<img src="' + icon + '"> ' + name;
+            legend.appendChild(div);
+        }
+    }
+        map.controls[google.maps.ControlPosition.LEFT_BOTTOM].push(legend);
+   // }
+}
 //*********************************************************************************************
 //The setBaseMap function is used to depict basemap demographic layers based on user selections
 function setSupportOrgs() {
@@ -187,12 +304,11 @@ function setSupportOrgs() {
     supportOrgLayer.loadGeoJson('data/supportOrgs.json');
 
     var supportIcon = {
-        url: 'data/dot2.png', // url
+        url: 'data/dot.png', // url
         scaledSize: new google.maps.Size(10, 10), // scaled size
         origin: new google.maps.Point(0, 0), // origin
         anchor: new google.maps.Point(0, 0) // anchor
     };
-
 
     supportOrgLayer.setStyle ({
         icon: supportIcon
@@ -201,7 +317,6 @@ function setSupportOrgs() {
     // popup with organization data
     supportOrgLayer.addListener('click', function(e) {
         //  console.log(e);
-
             infowindow.setContent('<div style="line-height:1.00;overflow:hidden;white-space:nowrap;">' +
                 '<p><b>' + 'Organization Name' + ':</b>&nbsp' +  e.feature.getProperty('CONAME') + '</p>' +
                 '<p><b>' + 'City' + ':</b>&nbsp' +  e.feature.getProperty('CITY') + '</p>' +
@@ -235,81 +350,96 @@ function setBaseMap() {
     if (baseMapLayer == "medinc") {
       attributeLabel = 'Median Household Income';
       tempColorArray = colorArrayGreen;
+      legendColors = "green";
       valueArray = [83930, 63604, 48093, 36454];
       extraChar = "$";
     }
     else if (baseMapLayer == "povu18") {
         attributeLabel = 'Poverty Level: Population Under Age 18';
         tempColorArray = colorArrayOrange;
+        legendColors = "orange";
         valueArray = [40.3, 26.5, 14.0, 5.1];
         extraChar = "%"
     }
     else if (baseMapLayer == 'povall') {
         attributeLabel = 'Poverty Level: Total Population';
         tempColorArray = colorArrayOrange;
+        legendColors = "orange";
         valueArray = [28.3, 19.3, 12.1, 7.5];
         extraChar = "%"
     }
     else if (baseMapLayer == 'AgeU14') {
         attributeLabel = 'Share of Population Under age 15';
         tempColorArray = colorArrayRed;
+        legendColors = "red";
         valueArray = [23.7, 19.9, 17.2, 14.0];
         extraChar = "%"
     }
     else if (baseMapLayer == 'Age1519') {
         attributeLabel = 'Share of Population Age 15 to 19';
         tempColorArray = colorArrayRed;
+        legendColors = "red";
         valueArray = [8.7, 7.2, 5.9, 4.4];
         extraChar = "%"
     }
     else if (baseMapLayer == 'Age2024') {
         attributeLabel = 'Share of Population Age 20 to 24';
         tempColorArray = colorArrayRed;
+        legendColors = "red";
         valueArray = [9.6, 8.1, 6.8, 5.2];
         extraChar = "%"
     }
     else if (baseMapLayer == 'Age2544') {
         attributeLabel = 'Share of Population Age 25 to 44';
         tempColorArray = colorArrayRed;
+        legendColors = "red";
         valueArray = [34.0, 30.2, 27.6, 24.3];
         extraChar = "%"
     }
     else if (baseMapLayer == 'Ag4564') {
         attributeLabel = 'Share of Population Age 45 to 64';
         tempColorArray = colorArrayRed;
+        legendColors = "red";
         valueArray = [29.8, 26.4, 23.7, 20.6];
         extraChar = "%"
     }
     else if (baseMapLayer == 'Age65Ovr') {
         attributeLabel = 'Share of Population Age 65 and Over';
         tempColorArray = colorArrayRed;
+        legendColors = "red";
         valueArray = [17.2, 13.1, 10.3, 7.6];
         extraChar = "%"
     }
     else if (baseMapLayer == 'lthigh') {
         attributeLabel = 'Highest Education Attainment: Less than High School';
         tempColorArray = colorArrayBlue;
+        legendColors = "blue";
         valueArray = [41.1, 26.3, 14.5, 5.9];
         extraChar = "%"
     }
     else if (baseMapLayer == 'highsch') {
         attributeLabel = 'Highest Education Attainment: High School Graduate';
         tempColorArray = colorArrayBlue;
+        legendColors = "blue";
         valueArray = [27.6, 23.6, 19.7, 13.6];
         extraChar = "%"
     }
     else if (baseMapLayer == 'smeasso') {
         attributeLabel = 'Highest Education Attainment: Some College or Associate Degree';
         tempColorArray = colorArrayBlue;
+        legendColors = "blue";
         valueArray = [32.8, 27.5, 23.6, 18.7];
         extraChar = "%"
     }
     else if (baseMapLayer == 'bachigh') {
         attributeLabel = 'Highest Education Attainment: Bachelor Degree or Higher';
         tempColorArray = colorArrayBlue;
+        legendColors = "blue";
         valueArray = [50.3, 30.8, 18.7, 9.6];
         extraChar = "%"
     }
+
+    legendValues = valueArray;
 
     // returns a color based on the value given when the function is called
     function getColor(val) {
@@ -371,15 +501,19 @@ function setBaseMap() {
 
 //***************************************************************************************************************
 function initAutocomplete() {
+
+    var options = {
+        bounds: startUpBounds
+    };
+
     // Create the autocomplete object
-    autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'));
-    autocomplete_incident = new google.maps.places.Autocomplete(document.getElementById('autocomplete_incident'));
+    autocomplete = new google.maps.places.Autocomplete(document.getElementById('autocomplete'),options);
+    autocomplete_incident = new google.maps.places.Autocomplete(document.getElementById('autocomplete_incident'),options);
 
      // When the user selects an address from the dropdown, show the place selected
     autocomplete.addListener('place_changed', onPlaceChanged);
     autocomplete_incident.addListener('place_changed', setIncidentPlace);
 }
-
 
 //*********************************************************************************************
 function onPlaceChanged(){
@@ -416,7 +550,6 @@ function onPlaceChanged(){
 
 google.maps.event.addDomListener(window, 'load', initialization);
 
-
 //*********************************************************************************************
 function setIncidentPlace() {
 
@@ -437,7 +570,7 @@ function setIncidentPlace() {
     // If place is valid, zoom to location
     if (incidentPlace.geometry) {
         map.panTo(incidentPlace.geometry.location);
-        map.setZoom(17);
+        map.setZoom(15);
         incidentPlaceName = incidentPlace.name;
     }
 }
@@ -513,8 +646,6 @@ function queryIncidents(event) {
     });
 }
 
-//$("#query_form").on("submit",queryIncidents);
-
 $("#crime_type").on("change",queryIncidents);
 $("#crimeSymbols").on("change",queryIncidents);
 $("#demo_layer").on("change",queryIncidents);
@@ -543,7 +674,6 @@ function createIncident(event) {
         // set the place to null in case next report attempt uses invalid place and previous place remains as a global variable
         incidentPlace = null;
         document.getElementById("autocomplete_incident").placeholder = 'Incident Address';
-
 
     } else {
         window.alert("A valid place needs to be entered for your incident. Please try again");

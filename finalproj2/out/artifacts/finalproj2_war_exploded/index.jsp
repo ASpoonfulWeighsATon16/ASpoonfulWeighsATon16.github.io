@@ -106,12 +106,13 @@
           </div>
 
           <p></p>
+          <p></p>
 
-          <h5>Data Sources</h5>
+          <a href="data/References.pdf" target="_blank"><h5>Data Sources</h5></a>
+
 
         </form>
       </div>
-
 
         <!-- Create Incident Tab Panel -->
         <div class="tab-pane" id="submit_crime">
@@ -225,7 +226,8 @@
 
     <div id="map-canvas" class="col-xs-8"></div>
 
-  </div> <!-- row -->
+
+    </div> <!-- row -->
  </div>
 
 
