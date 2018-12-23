@@ -18,7 +18,7 @@
   <link rel="stylesheet" href="css/style.css">
 
 
-  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-eItgIW_klt8yPEpFF9IcsPgcJSEqex4&libraries=places,visualization,geometry"></script>
+  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=api_here&libraries=places,visualization,geometry"></script>
 
 
 
