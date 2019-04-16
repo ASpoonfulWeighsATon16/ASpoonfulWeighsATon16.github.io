@@ -1,0 +1,263 @@
+html, body {
+    height: 100%;
+    width: 100%;
+    background-color: #f6f6ee;
+    padding-left: 10px;
+}
+
+h1 {
+  font-family: 'Segoe UI', sans-serif
+  padding-right: 0px;
+  padding-left: 0px;
+  padding-bottom: 10px;
+  padding-top: 15px;
+  font-size: 30px;
+  vertical-align: middle;
+  text-decoration: none;
+  color:#666666;
+  font-weight: bold;
+}
+
+h2 {
+    font-family: 'Segoe UI', sans-serif;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    font-size: 12pt;
+    color: #595959;
+}
+
+h3 {
+   font-family: 'Segoe UI', sans-serif;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    font-size: 12pt;
+    color: #595959;
+}
+
+h4 {
+    font-family: 'Segoe UI', sans-serif;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    font-size: 12pt;
+    color: #595959;
+}
+
+h5 {
+    font-family: 'Segoe UI', sans-serif;
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+    font-size: 8pt;
+    color: #595959;
+}
+
+.container-fluid {
+  padding: 2px 2px;
+}
+
+#industryType {
+    padding-left: 2px;
+    padding-bottom:0px;
+    font-size: 0.67em;
+    border-radius: 5px;
+    border: 1px solid #e6e6e6;
+}
+
+#industry_measure{
+    padding-left: 2px;
+    padding-bottom:0px;
+    font-size: 0.67em;
+    border-radius: 5px;
+    border: 1px solid #e6e6e6;
+    margin-bottom: 10px;
+}
+
+#firstRow {
+ height:85vh;
+ padding: 0px;
+}
+
+label {
+    padding: 0px;
+    margin-bottom: 0px;
+}
+
+.card {
+  padding-right: 0px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  border-radius: 5px; /* 5px rounded corners */
+}
+
+.chartContainer{
+    background-color: rgba(0,0,0,0.2);
+}
+.innerRect {
+   background-color: #fff;
+}
+
+#mapTitle {
+   border-radius: 10px;
+   background-color: #fff;
+   padding-left: 10px;
+   padding-right: 10px;
+   padding-top: 10px;
+   padding-bottom: 5px;
+   text-align: center;
+   border: 2px solid #e6e6e6;
+}
+
+#query_form {
+    padding-right: 0px;
+    padding-left: 0px;
+    padding-bottom: 0px;
+    padding-top: 0px; 
+}
+
+#divTitle { 
+    font-size: 1.8em;
+}
+
+#divSubTitle{
+   font-size: 1.6em;
+   font-style: italic;
+   padding-top: 10px;
+   padding-bottom: 5px;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  padding-bottom:0px;
+  padding-top: 0px;
+  height: 10px;
+  background: #d3d3d3;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 10px;
+  padding-top: 0px;
+  background: #737373;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 10px;
+  padding-top: 0px;
+  background: #737373;
+  cursor: pointer;
+}
+
+#yearSlider {
+    padding-right: 2px;
+    padding-left: 2px;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+#opacitySlider{
+    margin-bottom: 5px;
+}
+
+#map {
+  height: 100vh;
+}
+
+#yearLabel, #transparencyLabel, #industryLabel {
+    font-weight: 600;
+    font-size: 0.9em;
+    padding-bottom: 0px;
+    padding-top: 0px;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  z-index: 1; /* Sit on top */
+  padding-top: 50px; /* Location of the box */
+  left: 0;
+  top: 0;
+  vertical-align: middle;
+  position: fixed;
+  float: left;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%; /* Full width */
+  height: 70%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+ 
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 50%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#legend {
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: #595959;
+    background: #fff;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 0px;
+    margin: 10px;
+}
+.legendText {
+    padding: 2px;
+}
+
+.axis path, 
+.axis line {
+    
+    fill: none;
+    stroke: black;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+}
+
+.axis text {
+    font-family:'Segoe UI', sans-serif;
+    font-size: 0.8em;
+}
+    
+}

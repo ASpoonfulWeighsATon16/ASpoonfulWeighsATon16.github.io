@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+
+    <meta charset="utf-8">
+    <title>Industry Concentration Atlas of the United States</title>
+
+    	
+      
+		<script type="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="js/jquery-3.3.1.min.js"></script>
+      
+        <link href=https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css rel="stylesheet">
+      
+        <link href=https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css rel="stylesheet" >
+        
+      <link rel="stylesheet" href="css/style.css">
+    
+      
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD-eItgIW_klt8yPEpFF9IcsPgcJSEqex4&libraries=places,visualization,geometry"></script>
+      
+  </head>
+
+  <body>
+   
+    <!--header-->
+
+  
+      <div class = "container-fluid" >
+        <div class= "row">
+         <div class = "col-md-12 col-sm-12">
+           <h1>Atlas of Manufacturing Concentration and Change</h1>
+         </div>
+        </div> 
+         <div class="row" id='firstRow'>
+            <div class="col-lg-3 col-md-3 col-sm-3">
+                
+                <div class="card h-50 px-2"> 
+                     <form id = "query_form">
+                         <label id="industryLabel">Please Choose an Industry and Measure to Map:</label><br> 
+                         <select id="industryType" name="industryType">
+                              <option value="311 Food Manufacturing">311 Food Manufacturing</option>
+                              <option value="312 Beverage and Tobacco Product Manufacturing">312 Beverage and Tobacco Product Mfg.</option>
+                              <option value="313 Textile Mills">313 Textile Mills</option>
+                              <option value="314 Textile Product Mills">314 Textile Product Mills</option>
+                              <option value="315 Apparel Manufacturing">315 Apparel Manufacturing</option>
+                              <option value="316 Leather and Allied Product Manufacturing">316 Leather and Allied Product Mfg.</option>
+                              <option value="321 Wood Product Manufacturing">321 Wood Product Manufacturing</option>
+                              <option value="322 Paper Manufacturing">322 Paper Manufacturing</option>
+                              <option value="323 Printing and Related Support Activities">323 Printing and Related Support Activities</option>
+                              <option value="324 Petroleum and Coal Products Manufacturing">324 Petroleum and Coal Products Mfg.</option>
+                              <option value="325 Chemical Manufacturing">325 Chemical Manufacturing</option>
+                              <option value="326 Plastics and Rubber Products Manufacturing">326 Plastics and Rubber Products Mfg.</option>
+                              <option value="327 Nonmetallic Mineral Product Manufacturing">327 Nonmetallic Mineral Product Mfg.</option>
+                              <option value="331 Primary Metal Manufacturing">331 Primary Metal Manufacturing</option>
+                              <option value="332 Fabricated Metal Product Manufacturing">332 Fabricated Metal Product Mfg.</option>
+                              <option value="333 Machinery Manufacturing">333 Machinery Manufacturing</option>
+                              <option value="334 Computer and Electronic Product Manufacturing">334 Computer and Electronic Product Mfg.</option>
+                              <option value="335 Electrical Equipment, Appliance and Component Manufacturing">335 Electrical Equip., Appliance and Component Mfg.</option>
+                              <option value="336 Transportation Equipment Manufacturing">336 Transportation Equipment Mfg.</option>
+                              <option value="337 Furniture and Related Product Manufacturing">337 Furniture and Related Product Mfg.</option>
+                              <option value="339 Miscellaneous Manufacturing">339 Miscellaneous Manufacturing</option>
+                          </select>
+
+                          <select id="industry_measure" name="industry_measure">
+                              <option value="Percent of County Employment">Percent of County Employment</option>
+                              <option value="Total Employment">Total Employment</option>
+                              <option value="Location Quotient">Location Quotient</option>
+                              <option value="Percent of Employment in 100 Mile Radius">Percent of Employment in 100 Mile Radius</option>
+                              <option value="Spatial Clustering">Spatial Clustering</option>
+                          </select><br>
+
+                         <label id="yearLabel">Year: 2006</label><br>
+                         <input type="range" min="1" max="11" value="1" class="slider" id="yearSlider">
+
+
+                         <label id="transparencyLabel">Transparency:</label><br>
+                         <input type="range" min="1" max="10" value="1" class="slider" id="opacitySlider">
+                        
+                        
+                    <button type="button" id="openModal" class="btn btn-outline-secondary btn-sm">Measure Description</button>
+                    <a href='https://www.census.gov/cgi-bin/sssd/naics/naicsrch?input=311&search=2017+NAICS+Search&search=2017' target= 'blank'
+                     id="naicsButton" class="btn btn-outline-secondary btn-sm">Industry Description</a>
+                     </form>
+                </div>
+                
+                <div id="percentModal" class="modal">
+                      <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <p>Percent of Industry Employment is a county's share of total employment accounted for by a selected industry.  The measure shows the relative dependence of the local economy on a given industry.</p>
+                      </div>
+                </div>
+                
+                <div id="autoModal" class="modal">
+                      <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <p>Given a set of weighted features, this feature identifies statistically significant hot spots, cold spots, and spatial outliers using the Anselin Local Moran's I statistic. High-High is a statistically significant cluster of high values and Low-Low is a statistically significant cluster of low values. Features can have ahigh value surrounded by features with low values (HL) or low values and is surrounded by features with high values (LH).
+                      </p>
+                      </div>
+                </div>
+                <div id="totalModal" class="modal">
+                      <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <p>Total Industry Employment is simply the total number of employees in an industry for a given year.  It is a measure of industry magnitude.
+                      </p>
+                      </div>
+                </div>
+                
+                <div id="lqModal" class="modal">
+                      <div class="modal-content">
+                        <span class="close">&times;</span>
+                          <p> Location quotients provide another means for comparing employment. A location quotient (LQ) is calculated by comparing an industry’s share of local employment to the industry’s share of overall national employment. The critical value for a location quotient is 1.0.  An LQ of 1.0 means an area has the same proportion of local employment in an industry as the nation.  </p>
+                             <p>  Location quotients greater than 1.25 are important as they imply that an area has a specialization in a given industry. More specifically, an LQ greater than 1.25 suggests that an industry is producing more goods or services than can be consumed locally.  These goods and services are in turn exported out of the region, connecting the area to external economies and bringing outside dollars into local communities (i.e. they have an export-orientation).</p>
+                
+                      </div>
+                </div>
+                 
+                
+                <div class="card h-50 px-2" id='chartCard'>
+                    
+                </div>
+            
+            </div>
+                
+            <div  class="col-lg-9 col-md-9 col-sm-9" >
+                 <div class="card h-100" id="map"></div>
+            </div>  
+        </div> 
+      </div> 
+
+    <script src="js/main.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/d3-queue.js"></script>
+    
+    </body>
+    </html>
