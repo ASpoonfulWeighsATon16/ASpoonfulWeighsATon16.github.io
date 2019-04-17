@@ -718,7 +718,7 @@ function createLegend(valueArray){
         var tempText1 = valueArray[6]*100;
 
         var legText1 = "No Employment";
-        var legText2 = tempText1  +  ".00" + extraChar + " to " + tempText2  +  "0"+ extraChar;
+        var legText2 = tempText1  +  ".01" + extraChar + " to " + tempText2  +  "0"+ extraChar;
         var legText3 = tempText2  +  "0" + extraChar + " to " + tempText3  +  "0"+ extraChar;
         var legText4 = tempText3  +  "0" + extraChar + " to " + tempText4  +  ".00"+ extraChar;
         var legText5 = tempText4  +  ".00" + extraChar + " to " + tempText5  +  ".00"+ extraChar;
